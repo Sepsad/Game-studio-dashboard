@@ -10,8 +10,8 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input,Output
 import plotly.express as px
 import pandas as pd
-import os 
-os.chdir("/home/abbas/myProjects/210428_dashboard_sepsad/irooni-dash/")
+#import os 
+#os.chdir("/home/abbas/myProjects/210428_dashboard_sepsad/irooni-dash/")
 
 from data_reader import *
 
