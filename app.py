@@ -33,7 +33,7 @@ server = app.server
 
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H1("Irooni Source Dashboard"),className="text-center", width=12)
+        dbc.Col(html.H1("Irooni Source, Sink, Engagement Dashboard"),className="text-center", width=12)
     ]),
     dbc.Row([
         dbc.Col([
@@ -102,8 +102,8 @@ def update_graph(reward_selected):
 
     rewards_df_sub = rewards_df.loc[rewards_df.reward_type == reward_selected]
     #print(rewards_df_sub)
-    fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str')
-    fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str')
+    fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str', title= 'reward count')
+    fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str', title = 'daily engagement')
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
                     title = 'Trends separated for week days, Current year data, x-axis week of year nr')
     fig_4 = px.imshow(engagement_df_recent_agg_pvt,
