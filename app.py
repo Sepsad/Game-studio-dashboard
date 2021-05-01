@@ -105,14 +105,15 @@ def update_graph(reward_selected):
 
     rewards_df_sub = rewards_df.loc[rewards_df.reward_type == reward_selected]
     #print(rewards_df_sub)
-    fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str', title= 'reward count')
-    fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str', title = 'daily engagement')
+    fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str', title= 'Reward count')
+    fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str', title = 'Daily engagement')
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
-                    title = 'Trends separated for week days, Current year data, x-axis week of year nr')
+                    title = 'Engagement separated for week days, Current year data, x-axis week of year nr')
     fig_4 = px.imshow(engagement_df_recent_agg_pvt,
                       y = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
                       x = ['0_4h', '4_8h', '8_12h', '12_16h', '16_20h', '20_24h'],
-                labels=dict(x="Time of Day", y="Day of Week", color="Total level attempts in the last 6 months")
+                labels=dict(x="Time of Day", y="Day of Week", color="Total level attempts"),
+                title= 'Engagement for Week-day & day-interval, data of the last 6 months'
                )
 
     return fig_1, fig_2, fig_3, fig_4
