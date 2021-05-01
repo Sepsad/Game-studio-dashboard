@@ -40,17 +40,20 @@ app.layout = dbc.Container([
             dcc.Dropdown(id= "reward-type", multi = False, value = 'rocket_reward',
                          options = [{'label': x, 'value' : x} for x in ['bomb_reward', 'rocket_reward', 'disco_reward', 'cell_reward', 'row_reward', 'col_reward', 'shuffle_reward', 'coin_reward', 'heart_reward']]),
             dcc.Graph(id="fig-1", figure = {})
-        ], width={"size": 5}),
+        ], width={"size": 5})]),
+    dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-2", figure = {})  
-        ],  width={"size": 5}),
+        ],  width={"size": 5})]),
+    dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-3", figure = {})  
-        ],  width={"size": 5}),
+        ],  width={"size": 5})]),
+    dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-4", figure = {})  
-        ],  width={"size": 5})
-    ]),
+        ],  width={"size": 5})])
+    
 ])
 
 rewards_df = read_reward_data()
@@ -107,6 +110,8 @@ def update_graph(reward_selected):
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
                     title = 'Trends separated for week days, Current year data, x-axis week of year nr')
     fig_4 = px.imshow(engagement_df_recent_agg_pvt,
+                      y = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
+                      x = ['0_4h', '4_8h', '8_12h', '12_16h', '16_20h', '20_24h'],
                 labels=dict(x="Time of Day", y="Day of Week", color="Total level attempts in the last 6 months")
                )
 
