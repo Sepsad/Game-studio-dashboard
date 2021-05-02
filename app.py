@@ -56,7 +56,11 @@ app.layout = dbc.Container([
         dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-5", figure = {})  
-        ],  width={"size": 5})])
+        ],  width={"size": 5})]),
+                dbc.Row([
+        dbc.Col([
+            dcc.Graph(id = "fig-6", figure = {})  
+        ],  width={"size": 5})]),
     
 ])
 
@@ -81,10 +85,10 @@ engagement_df_last_year_agg = engagement_df_last_year_agg.loc[engagement_df_last
 cutoff_date = engagement_df["date"].max() - pd.Timedelta(days=180)
 
 engagement_df_recent = engagement_df.loc[engagement_df['date'] > cutoff_date]
-engagement_df_1h_recent = engagement_df.loc[engagement_df['date'] > cutoff_date]
+engagement_df_1h_recent = engagement_df_1h.loc[engagement_df_1h['date'] > cutoff_date]
 
-engagement_df_1h_recent_agg = engagement_df_1h.groupby(['weekday','bin1h'])['n_level_attempts'].sum().reset_index()
-engagement_df_recent_agg = engagement_df.groupby(['weekday','bin4h_str'])['n_level_attempts'].sum().reset_index()
+engagement_df_1h_recent_agg = engagement_df_1h_recent.groupby(['weekday','bin1h'])['n_level_attempts'].sum().reset_index()
+engagement_df_recent_agg = engagement_df_recent.groupby(['weekday','bin4h_str'])['n_level_attempts'].sum().reset_index()
 
 engagement_df_recent_agg_pvt = pd.pivot_table(engagement_df_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin4h_str')
 engagement_df_1h_recent_agg_pvt = pd.pivot_table(engagement_df_1h_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin1h')
@@ -97,7 +101,30 @@ engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt[[x for x in ra
 #################################
 
 
+hourly_user_df = read_hourly_users()
+hourly_user_df_recent = hourly_user_df.loc[hourly_user_df['date'] > cutoff_date]
 
+hourly_user_df_recent_agg = hourly_user_df_recent.groupby(['bin1h'])['n_distinct_players_l1_l19',
+                                                                     'n_distinct_players_l20_99',
+                                                                     'n_distinct_players_l100_l299',
+                                                                     'n_distinct_players_l300_l799',
+                                                                     'n_distinct_players_l800plus'].sum().reset_index()
+
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg
+hourly_user_df_recent_agg_ratio['ratio_distinct_players_l1_l19'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l1_l19'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l1_l19'].sum()
+hourly_user_df_recent_agg_ratio['ratio_distinct_players_l20_99'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l20_99'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l20_99'].sum()
+hourly_user_df_recent_agg_ratio['ratio_distinct_players_l100_l299'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l100_l299'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l100_l299'].sum()
+hourly_user_df_recent_agg_ratio['ratio_distinct_players_l300_l799'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l300_l799'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l300_l799'].sum()
+hourly_user_df_recent_agg_ratio['ratio_distinct_players_l800plus'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l800plus'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l800plus'].sum()
+
+
+hourly_user_df_recent_agg_ratio.index = hourly_user_df_recent_agg_ratio['bin1h']
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('bin1h', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l1_l19', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l20_99', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l100_l299', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l300_l799', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l800plus', 1)
 
 
 
@@ -109,6 +136,7 @@ engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt[[x for x in ra
     Output('fig-3', 'figure'),
     #Output('fig-4', 'figure'),
     Output('fig-5', 'figure'),
+    Output('fig-6', 'figure'),
     Input('reward-type', 'value')
 )
 def update_graph(reward_selected):
@@ -135,8 +163,12 @@ def update_graph(reward_selected):
                 labels=dict(x="Time of Day (h)", y="Day of Week", color="Total level attempts"),
                 title= 'Engagement for Week-day & day-interval, data of the last 6 months'
                )
+    fig_6 = px.imshow(hourly_user_df_recent_agg_ratio,
+                labels=dict(x="Level Interval", y="Time of Day (h)", color="n Distinct Users"),
+                title= 'Number of distinct users in hours and levels, data of the last 6 months'
+               )
 
-    return fig_1, fig_2, fig_3, fig_5
+    return fig_1, fig_2, fig_3, fig_5, fig_6
 
 
 
