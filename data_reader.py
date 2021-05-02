@@ -109,3 +109,23 @@ def read_engagement_data_1hbin():
 
     return df
 
+def read_hourly_users():
+    #
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('users_daily_pattern')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    df['bin1h'] = df['bin1h'].astype(int)
+    df['n_distinct_players_l1_l19'] = df['n_distinct_players_l1_l19'].astype(int)
+    df['n_distinct_players_l20_99'] = df['n_distinct_players_l20_99'].astype(int)
+    df['n_distinct_players_l100_l299'] = df['n_distinct_players_l100_l299'].astype(int)
+    df['n_distinct_players_l300_l799'] = df['n_distinct_players_l300_l799'].astype(int)
+    df['n_distinct_players_l800plus'] = df['n_distinct_players_l800plus'].astype(int)
+    df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
+
+    return df
+
