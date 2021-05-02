@@ -125,6 +125,11 @@ hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distin
 hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l100_l299', 1)
 hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l300_l799', 1)
 hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l800plus', 1)
+hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio[['ratio_distinct_players_l1_l19', 
+                                                             'ratio_distinct_players_l20_99', 
+                                                             'ratio_distinct_players_l100_l299', 
+                                                             'ratio_distinct_players_l300_l799', 
+                                                             'ratio_distinct_players_l800plus']]
 
 
 
@@ -165,6 +170,11 @@ def update_graph(reward_selected):
                )
     fig_6 = px.imshow(hourly_user_df_recent_agg_ratio,
                 labels=dict(x="Level Interval", y="Time of Day (h)", color="n Distinct Users"),
+                x = ['ratio_distinct_players_l1_l19', 
+                                                             'ratio_distinct_players_l20_99', 
+                                                             'ratio_distinct_players_l100_l299', 
+                                                             'ratio_distinct_players_l300_l799', 
+                                                             'ratio_distinct_players_l800plus'], 
                 title= 'Number of distinct users in hours and levels, data of the last 6 months'
                )
 
