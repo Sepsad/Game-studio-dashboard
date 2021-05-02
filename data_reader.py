@@ -93,3 +93,19 @@ def read_engagement_data():
 
     return df
 
+def read_engagement_data_1hbin():
+    #
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('engagement_daily_1h')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    df['bin1h'] = df['bin1h'].astype(int)
+    df['n_level_attempts'] = df['n_level_attempts'].astype(int)
+    df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
+
+    return df
+
