@@ -49,19 +49,24 @@ app.layout = dbc.Container([
         dbc.Col([
             dcc.Graph(id = "fig-3", figure = {})  
         ],  width={"size": 5})]),
-    dbc.Row([
+    #dbc.Row([
+        #dbc.Col([
+        #    dcc.Graph(id = "fig-4", figure = {})  
+        #],  width={"size": 5})]),
+        dbc.Row([
         dbc.Col([
-            dcc.Graph(id = "fig-4", figure = {})  
+            dcc.Graph(id = "fig-5", figure = {})  
         ],  width={"size": 5})])
     
 ])
 
 rewards_df = read_reward_data()
 engagement_df = read_engagement_data()
-
+engagement_df_1h = read_engagement_data_1hbin()
 
 
 engagement_df['weekday'] = engagement_df['date'].dt.day_name()
+engagement_df_1h['weekday'] = engagement_df_1h['date'].dt.day_name()
 
 
 
@@ -76,14 +81,22 @@ engagement_df_last_year_agg = engagement_df_last_year_agg.loc[engagement_df_last
 cutoff_date = engagement_df["date"].max() - pd.Timedelta(days=180)
 
 engagement_df_recent = engagement_df.loc[engagement_df['date'] > cutoff_date]
+engagement_df_1h_recent = engagement_df.loc[engagement_df['date'] > cutoff_date]
 
-engagement_df_recent_agg = engagement_df_recent.groupby(['weekday','bin4h_str'])['n_level_attempts'].sum().reset_index()
-
+engagement_df_1h_recent_agg = engagement_df_1h.groupby(['weekday','bin1h'])['n_level_attempts'].sum().reset_index()
+engagement_df_recent_agg = engagement_df.groupby(['weekday','bin4h_str'])['n_level_attempts'].sum().reset_index()
 
 engagement_df_recent_agg_pvt = pd.pivot_table(engagement_df_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin4h_str')
+engagement_df_1h_recent_agg_pvt = pd.pivot_table(engagement_df_1h_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin1h')
 
 engagement_df_recent_agg_pvt = engagement_df_recent_agg_pvt.reindex(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ])
 engagement_df_recent_agg_pvt = engagement_df_recent_agg_pvt[['0_4h', '4_8h', '8_12h', '12_16h', '16_20h', '20_24h']]
+
+engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt.reindex(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ])
+engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt[[x for x in range(24)]]
+#################################
+
+
 
 
 
@@ -94,7 +107,8 @@ engagement_df_recent_agg_pvt = engagement_df_recent_agg_pvt[['0_4h', '4_8h', '8_
     Output('fig-1', 'figure'),
     Output('fig-2', 'figure'),
     Output('fig-3', 'figure'),
-    Output('fig-4', 'figure'),
+    #Output('fig-4', 'figure'),
+    Output('fig-5', 'figure'),
     Input('reward-type', 'value')
 )
 def update_graph(reward_selected):
@@ -115,8 +129,14 @@ def update_graph(reward_selected):
                 labels=dict(x="Time of Day", y="Day of Week", color="Total level attempts"),
                 title= 'Engagement for Week-day & day-interval, data of the last 6 months'
                )
+    fig_5 = px.imshow(engagement_df_1h_recent_agg_pvt,
+                      y = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
+                      x = [x for x in range(24)],
+                labels=dict(x="Time of Day (h)", y="Day of Week", color="Total level attempts"),
+                title= 'Engagement for Week-day & day-interval, data of the last 6 months'
+               )
 
-    return fig_1, fig_2, fig_3, fig_4
+    return fig_1, fig_2, fig_3, fig_5
 
 
 
