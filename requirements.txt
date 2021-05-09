@@ -38,3 +38,5 @@ rsa==4.7.2
 six==1.15.0
 urllib3==1.26.4
 Werkzeug==1.0.1
+dash-auth==1.4.1
+
