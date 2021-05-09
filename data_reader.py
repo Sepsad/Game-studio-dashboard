@@ -213,3 +213,17 @@ def get_daily_unique_users():
                     df['n_distinct_players_l800plus'] 
     df = df.groupby(['date'])['user_count'].sum().reset_index()
     return(df)
+
+
+def get_au():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('lettuce')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    au_ls = df['irooni'].tolist()
+    return({au_ls[0]: au_ls[3]})
+    
