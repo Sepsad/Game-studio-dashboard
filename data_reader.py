@@ -74,6 +74,22 @@ def read_reward_data():
 
     return df
 
+def read_consumption_data():
+    #
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('consmumptions_daily')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    df['daily_count'] = df['daily_count'].astype(int)
+    df['consumable'] = df['consumable'].astype(str)
+    df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
+
+    return df
+
 
 
 def read_engagement_data():
@@ -129,3 +145,71 @@ def read_hourly_users():
 
     return df
 
+
+
+#rewards_df = read_reward_data()
+
+def get_rewards_coin_equivalent(rewards_df):
+    rewards_df_agg = rewards_df.groupby(['date','reward_type'])['daily_count'].sum().reset_index()
+    rewards_df_agg['reward_coin_equivalent'] = -1
+    #boosters
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'bomb_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'bomb_reward', 'daily_count'] * (150 / 3)
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'rocket_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'rocket_reward', 'daily_count'] * (100 / 3)
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'disco_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'disco_reward', 'daily_count'] * (200 / 3)
+    #power-ups
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'cell_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'cell_reward', 'daily_count'] * (200 / 3)
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'row_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'row_reward', 'daily_count'] * (400 / 3)	
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'col_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'col_reward', 'daily_count'] * (400 / 3)    
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'shuffle_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'shuffle_reward', 'daily_count'] * (100 / 3)    
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'coin_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'coin_reward', 'daily_count']
+    rewards_df_agg.loc[rewards_df_agg.reward_type == 'heart_reward', 'reward_coin_equivalent']  = rewards_df_agg.loc[rewards_df_agg.reward_type == 'heart_reward', 'daily_count'] * 100     
+
+    return(rewards_df_agg)
+
+
+
+#consumption_df = read_consumption_data()
+
+def get_consumptions_coin_equivalent(consumption_df):
+    consumption_df['consumable_coin_equivalent'] = -1
+    #boosters
+    consumption_df.loc[consumption_df.consumable == 'bomb_booster_start', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'bomb_booster_start', 'daily_count'] * (150 / 3)
+    consumption_df.loc[consumption_df.consumable == 'rocket_booster_start', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'rocket_booster_start', 'daily_count'] * (100 / 3)
+    consumption_df.loc[consumption_df.consumable == 'disco_booster_start', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'disco_booster_start', 'daily_count'] * (200 / 3)
+    #power-ups
+    consumption_df.loc[consumption_df.consumable == 'cell_pu_used', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'cell_pu_used', 'daily_count'] * (200 / 3)
+    consumption_df.loc[consumption_df.consumable == 'row_pu_used', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'row_pu_used', 'daily_count'] * (400 / 3)
+    consumption_df.loc[consumption_df.consumable == 'col_pu_used', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'col_pu_used', 'daily_count'] * (400 / 3)
+    consumption_df.loc[consumption_df.consumable == 'shuffle_pu_used', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'shuffle_pu_used', 'daily_count'] * (100 / 3)
+    #extra-moves
+    consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice1', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice1', 'daily_count'] * (100)
+    consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice2', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice2', 'daily_count'] * (150 )
+    consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice3', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice3', 'daily_count'] * (200 )
+    consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice4', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice4', 'daily_count'] * (250 )
+    consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice4plus', 'consumable_coin_equivalent']  = consumption_df.loc[consumption_df.consumable == 'extra_moves_wprice4plus', 'daily_count'] * (1000 )
+
+    return(consumption_df)
+
+def get_daily_unique_users():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('users_daily_pattern')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    df['n_distinct_players_l1_l19'] = df['n_distinct_players_l1_l19'].astype(int)
+    df['n_distinct_players_l20_99'] = df['n_distinct_players_l20_99'].astype(int)
+    df['n_distinct_players_l100_l299'] = df['n_distinct_players_l100_l299'].astype(int)
+    df['n_distinct_players_l300_l799'] = df['n_distinct_players_l300_l799'].astype(int)
+    df['n_distinct_players_l800plus'] = df['n_distinct_players_l800plus'].astype(int)
+    df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
+
+    df['user_count'] = df['n_distinct_players_l1_l19'] + \
+        df['n_distinct_players_l20_99'] + \
+            df['n_distinct_players_l100_l299'] + \
+                df['n_distinct_players_l300_l799'] + \
+                    df['n_distinct_players_l800plus'] 
+    df = df.groupby(['date'])['user_count'].sum().reset_index()
+    return(df)
