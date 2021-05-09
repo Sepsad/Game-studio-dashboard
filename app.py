@@ -5,6 +5,7 @@
 
 import dash
 import dash_core_components as dcc
+import dash_auth
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input,Output
@@ -23,10 +24,14 @@ from plotly.subplots import make_subplots
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+au = get_au()
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+auth = dash_auth.BasicAuth(
+    app,
+    au
+)
 server = app.server
-
-
 
 app.layout = dbc.Container([
     dbc.Row([
