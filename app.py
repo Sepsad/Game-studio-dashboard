@@ -14,7 +14,8 @@ import pandas as pd
 #os.chdir("/home/abbas/myProjects/210428_dashboard_sepsad/irooni-dash/")
 
 from data_reader import *
-
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 
@@ -25,16 +26,17 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-# assume you have a "long-form" data frame
-# see https://plotly.com/python/px-arguments/ for more options
-
-
 
 
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.H1("Irooni Source, Sink, Engagement Dashboard"),className="text-center", width=12)
     ]),
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id = "fig-0", figure = {})  
+        ],  width={"size": 5})]),
+
     dbc.Row([
         dbc.Col([
             dcc.Dropdown(id= "reward-type", multi = False, value = 'rocket_reward',
@@ -49,10 +51,7 @@ app.layout = dbc.Container([
         dbc.Col([
             dcc.Graph(id = "fig-3", figure = {})  
         ],  width={"size": 5})]),
-    #dbc.Row([
-        #dbc.Col([
-        #    dcc.Graph(id = "fig-4", figure = {})  
-        #],  width={"size": 5})]),
+
         dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-5", figure = {})  
@@ -67,6 +66,7 @@ app.layout = dbc.Container([
 rewards_df = read_reward_data()
 engagement_df = read_engagement_data()
 engagement_df_1h = read_engagement_data_1hbin()
+hourly_user_df = read_hourly_users()
 
 
 engagement_df['weekday'] = engagement_df['date'].dt.day_name()
@@ -101,7 +101,6 @@ engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt[[x for x in ra
 #################################
 
 
-hourly_user_df = read_hourly_users()
 hourly_user_df_recent = hourly_user_df.loc[hourly_user_df['date'] > cutoff_date]
 
 hourly_user_df_recent_agg = hourly_user_df_recent.groupby(['bin1h'])['n_distinct_players_l1_l19',
@@ -130,38 +129,40 @@ hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio[['ratio_distin
                                                              'ratio_distinct_players_l100_l299', 
                                                              'ratio_distinct_players_l300_l799', 
                                                              'ratio_distinct_players_l800plus']]
+##########################################
+rewards_coin_equiv_df  = get_rewards_coin_equivalent(rewards_df)
+rewards_coin_equiv_df_agg = rewards_coin_equiv_df.groupby(['date'])['reward_coin_equivalent'].sum().reset_index()
+
+consumption_df = read_consumption_data()
+consumables_coin_equiv_df = get_consumptions_coin_equivalent(consumption_df)
+consumption_df_agg = consumables_coin_equiv_df.groupby(['date'])['consumable_coin_equivalent'].sum().reset_index()
+
+
+daily_unique_users_df = get_daily_unique_users()
+
+df_coin_eq_reward_consumption_eng = rewards_coin_equiv_df_agg.merge(consumption_df_agg)
+df_coin_eq_reward_consumption_eng = df_coin_eq_reward_consumption_eng.merge(daily_unique_users_df)
 
 
 
 # CallBack
 #*****************************************************
 @app.callback(
+    Output('fig-0', 'figure'),
     Output('fig-1', 'figure'),
     Output('fig-2', 'figure'),
     Output('fig-3', 'figure'),
-    #Output('fig-4', 'figure'),
     Output('fig-5', 'figure'),
     Output('fig-6', 'figure'),
     Input('reward-type', 'value')
 )
 def update_graph(reward_selected):
-    #sdf, dff = read_data(reward_selected)
-    #dff['date'] = dff.index
-    #fig_time_per_session = px.line(dff, x='date', y=['REWARD_TYPE_LEVEL_CHEST','REWARD_TYPE_STAR_CHEST','REWARD_TYPE_DAILY_BONUS','REWARD_TYPE_TREASURE_CHEST','REWARD_TYPE_TEAM_CHEST', 'REWARD_TYPE_DAILY_TASK', 'REWARD_TYPE_TEAM_TOURNAMENT', 'OTHER_REWARD'])
-    #fig_time_per_session_box = px.box(df,x= "chest_type", y= "daily_count_" + str(reward_selected), notched=True)
-
     rewards_df_sub = rewards_df.loc[rewards_df.reward_type == reward_selected]
-    #print(rewards_df_sub)
     fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str', title= 'Reward count')
     fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str', title = 'Daily engagement')
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
                     title = 'Engagement separated for week days, Current year data, x-axis week of year nr')
-    fig_4 = px.imshow(engagement_df_recent_agg_pvt,
-                      y = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
-                      x = ['0_4h', '4_8h', '8_12h', '12_16h', '16_20h', '20_24h'],
-                labels=dict(x="Time of Day", y="Day of Week", color="Total level attempts"),
-                title= 'Engagement for Week-day & day-interval, data of the last 6 months'
-               )
+
     fig_5 = px.imshow(engagement_df_1h_recent_agg_pvt,
                       y = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ],
                       x = [x for x in range(24)],
@@ -178,7 +179,23 @@ def update_graph(reward_selected):
                 title= 'Number of distinct users in hours and levels, data of the last 6 months'
                )
 
-    return fig_1, fig_2, fig_3, fig_5, fig_6
+
+    fig_0 = make_subplots(specs=[[{"secondary_y": True}]])
+    # Add traces
+    fig_0.add_trace(
+        go.Scatter(x=df_coin_eq_reward_consumption_eng['date'], y=df_coin_eq_reward_consumption_eng['reward_coin_equivalent'], name="total rewards coin equivalent"),
+        secondary_y=False
+    )
+    fig_0.add_trace(
+        go.Scatter(x=df_coin_eq_reward_consumption_eng['date'], y=df_coin_eq_reward_consumption_eng['consumable_coin_equivalent'], name="total consumables coin equivalent"),
+        secondary_y=False
+    )
+    fig_0.add_trace(
+        go.Scatter(x=df_coin_eq_reward_consumption_eng['date'], y=df_coin_eq_reward_consumption_eng['user_count'], name="engagement - unique user count"),
+        secondary_y=True
+    )
+
+    return fig_0, fig_1, fig_2, fig_3, fig_5, fig_6
 
 
 
