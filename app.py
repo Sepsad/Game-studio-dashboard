@@ -54,6 +54,11 @@ app.layout = dbc.Container([
         ],  width={"size": 5})]),
     dbc.Row([
         dbc.Col([
+            dcc.Graph(id = "fig-2b", figure = {})  
+        ],  width={"size": 5})]),
+
+    dbc.Row([
+        dbc.Col([
             dcc.Graph(id = "fig-3", figure = {})  
         ],  width={"size": 5})]),
 
@@ -147,7 +152,14 @@ daily_unique_users_df = get_daily_unique_users()
 
 df_coin_eq_reward_consumption_eng = rewards_coin_equiv_df_agg.merge(consumption_df_agg)
 df_coin_eq_reward_consumption_eng = df_coin_eq_reward_consumption_eng.merge(daily_unique_users_df)
+#############################################################
 
+weekly_engagement_percentile_df= read_weekly_engagement_percentile_data()
+weekly_engagement_percentile_df = weekly_engagement_percentile_df.loc[weekly_engagement_percentile_df['weekly']<53]
+weekly_engagement_percentile_df['year'] = weekly_engagement_percentile_df["year"].astype(str) 
+weekly_engagement_percentile_df['weekly'] = weekly_engagement_percentile_df["weekly"].astype(str) 
+
+weekly_engagement_percentile_df['year_week'] = weekly_engagement_percentile_df[['year', 'weekly']].agg('..'.join, axis=1)
 
 
 # CallBack
@@ -156,6 +168,7 @@ df_coin_eq_reward_consumption_eng = df_coin_eq_reward_consumption_eng.merge(dail
     Output('fig-0', 'figure'),
     Output('fig-1', 'figure'),
     Output('fig-2', 'figure'),
+    Output('fig-2b', 'figure'),
     Output('fig-3', 'figure'),
     Output('fig-5', 'figure'),
     Output('fig-6', 'figure'),
@@ -164,7 +177,24 @@ df_coin_eq_reward_consumption_eng = df_coin_eq_reward_consumption_eng.merge(dail
 def update_graph(reward_selected):
     rewards_df_sub = rewards_df.loc[rewards_df.reward_type == reward_selected]
     fig_1 = px.line(rewards_df_sub, x='date', y= 'daily_count', color = 'chest_type_str', title= 'Reward count')
+    
     fig_2 = px.line(engagement_df, x='date', y= 'n_level_attempts', color = 'bin4h_str', title = 'Daily engagement')
+
+    fig_2b = px.line(weekly_engagement_percentile_df, x= 'year_week',
+                     y=['percentile_1',
+                        'percentile_2',
+                        'percentile_3',
+                        'percentile_4',
+                        'percentile_5',
+                        'percentile_6',
+                        'percentile_7',
+                        'percentile_8',
+                        'percentile_9',
+                        'percentile_99'],
+                     title = 'Weekly engagement percentiles',
+                     labels=dict(x="year..week", y="n level attempts", color="percentile group"),)
+    
+
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
                     title = 'Engagement separated for week days, Current year data, x-axis week of year nr')
 
@@ -200,7 +230,7 @@ def update_graph(reward_selected):
         secondary_y=True
     )
 
-    return fig_0, fig_1, fig_2, fig_3, fig_5, fig_6
+    return fig_0, fig_1, fig_2, fig_2b, fig_3, fig_5, fig_6
 
 
 
