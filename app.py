@@ -191,8 +191,7 @@ def update_graph(reward_selected):
                         'percentile_8',
                         'percentile_9',
                         'percentile_99'],
-                     title = 'Weekly engagement percentiles',
-                     labels=dict(x="year..week", y="n level attempts", color="percentile group"),)
+                                          title = 'Weekly engagement percentiles (n level attempts weekly)')
     
 
     fig_3 = px.line(engagement_df_last_year_agg, x='week_nr', y= 'n_level_attempts', color = 'weekday',\
