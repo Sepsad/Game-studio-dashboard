@@ -106,6 +106,7 @@ def read_engagement_data():
     df['n_level_attempts'] = df['n_level_attempts'].astype(int)
     df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
     df = df.merge(daily_4hbins_df, on = 'bin4h')
+    df['weekday'] = df['date'].dt.day_name()
 
     return df
 
@@ -123,7 +124,84 @@ def read_engagement_data_1hbin():
     df['n_level_attempts'] = df['n_level_attempts'].astype(int)
     df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
 
+    df['weekday'] = df['date'].dt.day_name()
     return df
+
+
+def get_agg_last_year_engagement_data():
+    engagement_df = read_engagement_data()
+    max_year = engagement_df['date'].dt.year.max()
+
+    engagement_df_last_year = engagement_df.loc[engagement_df['date'].dt.year == max_year]
+    engagement_df_last_year['week_nr'] = pd.DatetimeIndex(engagement_df_last_year['date']).weekofyear
+
+    engagement_df_last_year_agg = engagement_df_last_year.groupby(['week_nr','weekday'])['n_level_attempts'].sum().reset_index()
+    engagement_df_last_year_agg = engagement_df_last_year_agg.loc[engagement_df_last_year_agg['week_nr'] < 53]
+    return engagement_df_last_year_agg
+
+def get_pvt_agg_recent_engagement_1h_data():
+    engagement_df = read_engagement_data()
+    engagement_df_1h = read_engagement_data_1hbin()
+    cutoff_date = engagement_df["date"].max() - pd.Timedelta(days=180)
+    engagement_df_1h_recent = engagement_df_1h.loc[engagement_df_1h['date'] > cutoff_date]
+    engagement_df_1h_recent_agg = engagement_df_1h_recent.groupby(['weekday','bin1h'])['n_level_attempts'].sum().reset_index()
+
+    engagement_df_1h_recent_agg_pvt = pd.pivot_table(engagement_df_1h_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin1h')
+    engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt.reindex(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ])
+    engagement_df_1h_recent_agg_pvt = engagement_df_1h_recent_agg_pvt[[x for x in range(24)]]
+
+    return engagement_df_1h_recent_agg_pvt
+
+
+def get_pvt_agg_recent_engagement_data():
+    engagement_df = read_engagement_data()
+    cutoff_date = engagement_df["date"].max() - pd.Timedelta(days=180)
+
+    engagement_df_recent = engagement_df.loc[engagement_df['date'] > cutoff_date]
+
+    engagement_df_recent_agg = engagement_df_recent.groupby(['weekday','bin4h_str'])['n_level_attempts'].sum().reset_index()
+    engagement_df_recent_agg_pvt = pd.pivot_table(engagement_df_recent_agg, values = 'n_level_attempts', index='weekday', columns = 'bin4h_str')
+    engagement_df_recent_agg_pvt = engagement_df_recent_agg_pvt.reindex(['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday' ])
+
+    engagement_df_recent_agg_pvt = engagement_df_recent_agg_pvt[['0_4h', '4_8h', '8_12h', '12_16h', '16_20h', '20_24h']]
+
+    return engagement_df_recent_agg_pvt
+
+
+def get_recent_hourly_user_agg_ratio():
+
+    engagement_df = read_engagement_data()
+    cutoff_date = engagement_df["date"].max() - pd.Timedelta(days=180)
+    hourly_user_df = read_hourly_users()
+    hourly_user_df_recent = hourly_user_df.loc[hourly_user_df['date'] > cutoff_date]
+
+    hourly_user_df_recent_agg = hourly_user_df_recent.groupby(['bin1h'])['n_distinct_players_l1_l19',
+                                                                     'n_distinct_players_l20_99',
+                                                                     'n_distinct_players_l100_l299',
+                                                                     'n_distinct_players_l300_l799',
+                                                                     'n_distinct_players_l800plus'].sum().reset_index()
+
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg
+    hourly_user_df_recent_agg_ratio['ratio_distinct_players_l1_l19'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l1_l19'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l1_l19'].sum()
+    hourly_user_df_recent_agg_ratio['ratio_distinct_players_l20_99'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l20_99'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l20_99'].sum()
+    hourly_user_df_recent_agg_ratio['ratio_distinct_players_l100_l299'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l100_l299'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l100_l299'].sum()
+    hourly_user_df_recent_agg_ratio['ratio_distinct_players_l300_l799'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l300_l799'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l300_l799'].sum()
+    hourly_user_df_recent_agg_ratio['ratio_distinct_players_l800plus'] = hourly_user_df_recent_agg_ratio['n_distinct_players_l800plus'] / hourly_user_df_recent_agg_ratio['n_distinct_players_l800plus'].sum()
+
+
+    hourly_user_df_recent_agg_ratio.index = hourly_user_df_recent_agg_ratio['bin1h']
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('bin1h', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l1_l19', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l20_99', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l100_l299', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l300_l799', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio.drop('n_distinct_players_l800plus', 1)
+    hourly_user_df_recent_agg_ratio = hourly_user_df_recent_agg_ratio[['ratio_distinct_players_l1_l19', 
+                                                             'ratio_distinct_players_l20_99', 
+                                                             'ratio_distinct_players_l100_l299', 
+                                                             'ratio_distinct_players_l300_l799', 
+                                                             'ratio_distinct_players_l800plus']]
+    return hourly_user_df_recent_agg_ratio
 
 def read_hourly_users():
     #
