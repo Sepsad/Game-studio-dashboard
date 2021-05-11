@@ -325,3 +325,21 @@ def read_weekly_engagement_percentile_data():
     return df
 
 
+
+def read_weekly_engagement_percentile_data():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("irooni_lettuce")
+    worksheet = sheet.worksheet('weekly_engagement_percentiles')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    col_names = list(df)
+    for col in col_names:
+        if col in ['year', 'weekly']:
+            df[col] = df[col].astype(int)
+        if col not in ['year', 'weekly']:
+            df[col] = df[col].astype(float)
+    return df
+

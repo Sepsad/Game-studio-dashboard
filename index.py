@@ -13,7 +13,7 @@ import pandas as pd
 from app import app
 from app import server
 
-from apps import detailed_engagemnet, reward, total
+from apps import detailed_engagemnet, reward, total, this_week
 from utils import get_au
 
 
@@ -32,7 +32,7 @@ app.layout = html.Div([html.H1(children='Irooni Dashboard'), html.H2('Content:')
         html.Br(),
         dcc.Link('Detailed engagemnet\n', href='/apps/detailed_engagemnet'),
         html.Br(),
-        # dcc.Link('This Week Analysis', href = '/apps/this_week')
+        dcc.Link('This Week Analysis', href = '/apps/this_week'),
         html.Br()
     ], className="row"),
     html.Div(id='page-content', children=[])
@@ -47,8 +47,8 @@ def display_page(pathname):
         return detailed_engagemnet.layout
     if pathname == '/apps/reward':
         return reward.layout
-    # if pathname == '/apps/this_week':
-    #     return this_week.layout
+    if pathname == '/apps/this_week':
+        return this_week.layout
     else:
         return html.H6("Please choose a link")
 
