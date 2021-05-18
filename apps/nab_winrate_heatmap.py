@@ -36,8 +36,11 @@ my_df['startDate_date'] =  pd.to_datetime(my_df['startDate_date'])
 df_win_rate_pvt = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'win_rate', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt = df_win_rate_pvt.set_index('gameNumber')
 
+df_win_rate_pvt.columns =df_win_rate_pvt.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
+ 
 fig = px.imshow(df_win_rate_pvt, 
+                x = df_win_rate_pvt.columns.tolist(),
                  labels=dict(x="date - game start", y="game number", color="win rate"),
                  zmin=0, zmax=1, origin= 'lower')
 fig.update_layout(hovermode='closest')
