@@ -343,3 +343,14 @@ def read_weekly_engagement_percentile_data():
             df[col] = df[col].astype(float)
     return df
 
+def read_nabardestan_winrate_data():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("nabardestan_lettuce")
+    worksheet = sheet.worksheet('heatmap_winrate')
+    data = worksheet.get_all_values()   
+    headers = data.pop(0)
+    df = pd.DataFrame(data, columns=headers)
+    return df
+
