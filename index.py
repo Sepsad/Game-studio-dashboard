@@ -13,7 +13,7 @@ import pandas as pd
 from app import app
 from app import server
 
-from apps import detailed_engagemnet, reward, total, this_week, nab_winrate_heatmap
+from apps import detailed_engagemnet, reward, total, nab_winrate_heatmap#, this_week
 from utils import get_au
 
 
@@ -32,8 +32,9 @@ app.layout = html.Div([html.H1(children='Game insights Dashboard'), html.H2('Iro
         html.Br(),
         dcc.Link('Detailed engagemnet\n', href='/apps/detailed_engagemnet'),
         html.Br(),
-        dcc.Link('This Week Analysis', href = '/apps/this_week'),
-        html.Br()], className="row"),
+        #dcc.Link('This Week Analysis', href = '/apps/this_week'),
+        html.Br()], 
+       className="row"),
     html.H2('Nabardestan analytics:'),
     html.Div([
         dcc.Link('Nabardestan win rate', href = '/apps/nab_winrate_heatmap'),
@@ -51,8 +52,8 @@ def display_page(pathname):
         return detailed_engagemnet.layout
     if pathname == '/apps/reward':
         return reward.layout
-    if pathname == '/apps/this_week':
-        return this_week.layout
+#    if pathname == '/apps/this_week':
+#        return this_week.layout
     if pathname == '/apps/nab_winrate_heatmap':
         return nab_winrate_heatmap.layout
     else:
