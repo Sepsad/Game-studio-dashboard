@@ -13,7 +13,7 @@ import pandas as pd
 from app import app
 from app import server
 
-from apps import detailed_engagemnet, reward, total, this_week
+from apps import detailed_engagemnet, reward, total, this_week, nab_winrate_heatmap
 from utils import get_au
 
 
@@ -23,7 +23,7 @@ auth = dash_auth.BasicAuth(
     au
 )
 
-app.layout = html.Div([html.H1(children='Irooni Dashboard'), html.H2('Content:'),
+app.layout = html.Div([html.H1(children='Game insights Dashboard'), html.H2('Irooni analytics:'),
     dcc.Location(id='url', refresh=False),
     html.Div([
         dcc.Link('Total engagement,sink and source\n', href='/apps/total'),
@@ -33,6 +33,10 @@ app.layout = html.Div([html.H1(children='Irooni Dashboard'), html.H2('Content:')
         dcc.Link('Detailed engagemnet\n', href='/apps/detailed_engagemnet'),
         html.Br(),
         dcc.Link('This Week Analysis', href = '/apps/this_week'),
+        html.Br()], className="row"),
+    html.H2('Nabardestan analytics:'),
+    html.Div([
+        dcc.Link('Nabardestan win rate', href = '/apps/nab_winrate_heatmap'),
         html.Br()
     ], className="row"),
     html.Div(id='page-content', children=[])
@@ -49,6 +53,8 @@ def display_page(pathname):
         return reward.layout
     if pathname == '/apps/this_week':
         return this_week.layout
+    if pathname == '/apps/nab_winrate_heatmap':
+        return nab_winrate_heatmap.layout
     else:
         return html.H6("Please choose a link")
 
