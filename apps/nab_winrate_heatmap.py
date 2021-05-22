@@ -19,7 +19,7 @@ import pandas as pd
 import pathlib
 #from app import app
 
-from utils import read_nabardestan_winrate_data
+from utils import read_nabardestan_winrate_data, read_nabardestan_winrate_AB_t1_data
 
 
 my_df = read_nabardestan_winrate_data()
@@ -45,7 +45,7 @@ fig = px.imshow(df_win_rate_pvt,
                  zmin=0, zmax=1, origin= 'lower')
 fig.update_layout(hovermode='closest')
 #fig.show()
-
+#############################################
 
 #cutoff_date = my_df["startDate_date"].max() - pd.Timedelta(days=10)
 
@@ -76,7 +76,45 @@ mydf2 = mydf2.append(my_df_lastweek, ignore_index=True)
 mydf2 = mydf2.append(my_df_last30, ignore_index=True)
 
 fig2 = px.line(mydf2, x='gameNumber', y= 'win_rate', color = 'group', title= 'win rate curve')
+########################################################3
+#winrate heatmap sep for AB t1
 
+
+my_df = read_nabardestan_winrate_AB_t1_data()
+
+#my_df['gameNumber'] = pd.to_numeric(my_df['gameNumber'],errors='coerce')
+#my_df['win_rate'] = pd.to_numeric(my_df['win_rate'],errors='coerce')
+my_df['gameNumber'] = my_df['gameNumber'].astype(int)
+my_df['win_rate'] = my_df['win_rate'].astype(float)
+my_df['startDate_date'] =  pd.to_datetime(my_df['startDate_date'])
+my_df = my_df[my_df.startDate_date >= '2021-05-06']#AB test start date approx.
+
+
+df_win_rate_pvt_A = pd.pivot_table(my_df[(my_df['gameNumber']< 30) & (my_df['groupName'] == 'A')], values = 'win_rate', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_A = df_win_rate_pvt_A.set_index('gameNumber')
+df_win_rate_pvt_A.columns =df_win_rate_pvt_A.columns.map(lambda t: t.strftime('%Y-%m-%d'))
+
+df_win_rate_pvt_B = pd.pivot_table(my_df[(my_df['gameNumber']< 30) & (my_df['groupName'] == 'B')], values = 'win_rate', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_B = df_win_rate_pvt_B.set_index('gameNumber')
+df_win_rate_pvt_B.columns =df_win_rate_pvt_B.columns.map(lambda t: t.strftime('%Y-%m-%d'))
+
+ 
+fig_3A = px.imshow(df_win_rate_pvt_A, 
+                x = df_win_rate_pvt_A.columns.tolist(),
+                 labels=dict(x="date - game start", y="game number", color="win rate"),
+                 title = 'win rate for group A - AB test T1',
+                 zmin=0, zmax=1, origin= 'lower')
+
+fig_3B= px.imshow(df_win_rate_pvt_B, 
+                x = df_win_rate_pvt_B.columns.tolist(),
+                 labels=dict(x="date - game start", y="game number", color="win rate"),
+                 title = 'win rate for group B - AB test T1',
+                 zmin=0, zmax=1, origin= 'lower')
+
+
+
+
+######################################################3
 layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.H1("Nabardestan win rate"),className="text-center", width=12)
@@ -89,6 +127,16 @@ layout = dbc.Container([
         dbc.Row([
         dbc.Col([
             dcc.Graph(id = "fig-nab-2", figure = fig2)],
+             width={"size": 5}) 
+    ]),
+        dbc.Row([
+        dbc.Col([
+            dcc.Graph(id = "fig-nab-3", figure = fig_3A)],
+             width={"size": 5}) 
+    ]),
+        dbc.Row([
+        dbc.Col([
+            dcc.Graph(id = "fig-nab-4", figure = fig_3B)],
              width={"size": 5}) 
     ])
 
