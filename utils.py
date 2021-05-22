@@ -355,12 +355,13 @@ def read_nabardestan_winrate_data():
     return df
 
 
-def read_AB_test_data():
+
+def read_nabardestan_winrate_AB_t1_data():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
          'phrasal-datum-311915-03b34c76b093.json', scope) 
     gc = gspread.authorize(credentials)
-    sheet = gc.open("Nabardestan AB test sheet")
-    worksheet = sheet.worksheet('AB_Test')
+    sheet = gc.open("nabardestan_lettuce")
+    worksheet = sheet.worksheet('heatmap_winrate_ABtest_t1')
     data = worksheet.get_all_values()   
     headers = data.pop(0)
     df = pd.DataFrame(data, columns=headers)
