@@ -19,10 +19,10 @@ import pandas as pd
 import pathlib
 #from app import app
 
-from utils import read_nabardestan_winrate_data, read_nabardestan_winrate_AB_t1_data
+from utils import read_nabardestan_winrate_data_db, read_nabardestan_winrate_AB_t1_data_db
 
 
-my_df = read_nabardestan_winrate_data()
+my_df = read_nabardestan_winrate_data_db()
 
 
 #my_df['gameNumber'] = pd.to_numeric(my_df['gameNumber'],errors='coerce')
@@ -80,7 +80,7 @@ fig2 = px.line(mydf2, x='gameNumber', y= 'win_rate', color = 'group', title= 'wi
 #winrate heatmap sep for AB t1
 
 
-my_df = read_nabardestan_winrate_AB_t1_data()
+my_df = read_nabardestan_winrate_AB_t1_data_db()
 
 #my_df['gameNumber'] = pd.to_numeric(my_df['gameNumber'],errors='coerce')
 #my_df['win_rate'] = pd.to_numeric(my_df['win_rate'],errors='coerce')
