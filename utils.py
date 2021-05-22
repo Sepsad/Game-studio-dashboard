@@ -4,6 +4,15 @@ import sys
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import numpy as np
+from pandas.io import sql
+import sqlalchemy
+
+
+
+database_connection = sqlalchemy.create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.
+                                               format('gameinsights_readonly', 'r9noCIv+t1vY7BHG1ec=', 
+                                                      '86.104.38.240', 'game_insights'))
+
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
@@ -354,6 +363,10 @@ def read_nabardestan_winrate_data():
     df = pd.DataFrame(data, columns=headers)
     return df
 
+def read_nabardestan_winrate_data_db():
+    q = 'SELECT * FROM heatmap_winrate'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    return df
 
 
 def read_nabardestan_winrate_AB_t1_data():
@@ -366,3 +379,9 @@ def read_nabardestan_winrate_AB_t1_data():
     headers = data.pop(0)
     df = pd.DataFrame(data, columns=headers)
     return df
+
+def read_nabardestan_winrate_AB_t1_data_db():
+    q = 'SELECT * FROM heatmap_winrate_ABtest_t1'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    return df
+
