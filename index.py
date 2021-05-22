@@ -14,10 +14,10 @@ from app import app
 from app import server
 
 from apps import detailed_engagemnet, total, nab_winrate_heatmap#, this_week, reward
-from utils import get_au
+from utils import get_au_db
 
 
-au = get_au()
+au = get_au_db()
 auth = dash_auth.BasicAuth(
     app,
     au
