@@ -314,7 +314,10 @@ def get_au():
     au_ls = df['irooni'].tolist()
     return({au_ls[0]: au_ls[3]})
     
-
+def get_au_db():
+    q = 'SELECT * FROM au_tbl'
+    df = pd.read_sql(q, database_connection)
+    return({df.username.values[0]: df.password.values[0]})
 
 def read_weekly_engagement_percentile_data():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
