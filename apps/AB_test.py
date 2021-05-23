@@ -21,11 +21,6 @@ AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df[
 
 
 
-
-
-
-
-
 layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.H1("Nabardestan AB test"),className="text-center", width=12)
