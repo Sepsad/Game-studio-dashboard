@@ -39,7 +39,7 @@ app.layout = html.Div([html.H1(children='Game insights Dashboard'), html.H2('Iro
     html.Div([
         dcc.Link('Nabardestan win rate', href = '/apps/nab_winrate_heatmap'),
         html.Br(),
-        dcc.Link('Nabardestan AB test', href = '/apps/AB_test'),
+        dcc.Link('Nabardestan AB test win rate', href = '/apps/AB_test'),
         html.Br()
     ], className="row"),
     html.Div(id='page-content', children=[])

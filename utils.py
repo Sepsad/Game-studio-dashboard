@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from pandas.io import sql
 import sqlalchemy
-import mysql
 
 
 database_connection = sqlalchemy.create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.
