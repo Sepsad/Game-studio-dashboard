@@ -13,11 +13,16 @@ import pandas as pd
 from app import app
 from app import server
 
+<<<<<<< HEAD
 from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test#, this_week, reward
 from utils import get_au
+=======
+from apps import detailed_engagemnet, total, nab_winrate_heatmap#, this_week, reward
+from utils import get_au_db
+>>>>>>> 48421da492a1bee8ca36dee3258924f2a3c71e5c
 
 
-au = get_au()
+au = get_au_db()
 auth = dash_auth.BasicAuth(
     app,
     au

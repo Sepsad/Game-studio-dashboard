@@ -4,6 +4,15 @@ import sys
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import numpy as np
+from pandas.io import sql
+import sqlalchemy
+
+
+
+database_connection = sqlalchemy.create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.
+                                               format('gameinsights_readonly', 'r9noCIv+t1vY7BHG1ec=', 
+                                                      '86.104.38.240', 'game_insights'))
+
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
@@ -305,7 +314,10 @@ def get_au():
     au_ls = df['irooni'].tolist()
     return({au_ls[0]: au_ls[3]})
     
-
+def get_au_db():
+    q = 'SELECT * FROM au_tbl'
+    df = pd.read_sql(q, database_connection)
+    return({df.username.values[0]: df.password.values[0]})
 
 def read_weekly_engagement_percentile_data():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -354,6 +366,7 @@ def read_nabardestan_winrate_data():
     df = pd.DataFrame(data, columns=headers)
     return df
 
+<<<<<<< HEAD
 
 def read_AB_test_data():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -361,7 +374,30 @@ def read_AB_test_data():
     gc = gspread.authorize(credentials)
     sheet = gc.open("Nabardestan AB test sheet")
     worksheet = sheet.worksheet('AB_Test')
+=======
+def read_nabardestan_winrate_data_db():
+    q = 'SELECT * FROM heatmap_winrate'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    return df
+
+
+def read_nabardestan_winrate_AB_t1_data():
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+         'phrasal-datum-311915-03b34c76b093.json', scope) 
+    gc = gspread.authorize(credentials)
+    sheet = gc.open("nabardestan_lettuce")
+    worksheet = sheet.worksheet('heatmap_winrate_ABtest_t1')
+>>>>>>> 48421da492a1bee8ca36dee3258924f2a3c71e5c
     data = worksheet.get_all_values()   
     headers = data.pop(0)
     df = pd.DataFrame(data, columns=headers)
     return df
+<<<<<<< HEAD
+=======
+
+def read_nabardestan_winrate_AB_t1_data_db():
+    q = 'SELECT * FROM heatmap_winrate_ABtest_t1'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    return df
+
+>>>>>>> 48421da492a1bee8ca36dee3258924f2a3c71e5c
