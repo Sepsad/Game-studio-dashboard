@@ -394,3 +394,8 @@ def read_AB_test_data():
 #     return df
 
 
+def read_room_occupancy_data():
+    q = 'SELECT * FROM room_occupancy'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    return df
+    
