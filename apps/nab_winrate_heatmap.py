@@ -71,7 +71,7 @@ df_annot = df_win_rate_pvt_n_games.copy()
 for cur_date in list(df_annot):
     df_annot[cur_date] = 'n_games: ' + df_annot[cur_date].astype(str) 
     df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
-    df_annot[cur_date] =  df_annot[cur_date]  + 'pplayers per room (mean): '
+    df_annot[cur_date] =  df_annot[cur_date]  + 'players per room (mean): '
     df_annot[cur_date] = df_annot[cur_date] + df_win_rate_pvt_ppr[cur_date].astype(str)
     df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
     df_annot[cur_date] =  df_annot[cur_date]  + 'rank mean: '
@@ -150,62 +150,69 @@ df_win_rate_pvt_B = pd.pivot_table(my_df[(my_df['gameNumber']< 30) & (my_df['gro
 df_win_rate_pvt_B = df_win_rate_pvt_B.set_index('gameNumber')
 df_win_rate_pvt_B.columns =df_win_rate_pvt_B.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
-"""
-df_win_rate_pvt_n_games = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'n_games', index='gameNumber', columns = 'startDate_date').reset_index()
+my_df_A = my_df[my_df['groupName'] == 'A']
+my_df_B = my_df[my_df['groupName'] == 'B']
+
+
+df_win_rate_pvt_n_games = pd.pivot_table(my_df_A[my_df_A['gameNumber']< 30], values = 'n_games', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_n_games = df_win_rate_pvt_n_games.set_index('gameNumber')
 df_win_rate_pvt_n_games.columns = df_win_rate_pvt_n_games.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
-df_win_rate_pvt_ppr = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'players_per_room_mean', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_ppr = pd.pivot_table(my_df_A[my_df_A['gameNumber']< 30], values = 'players_per_room_mean', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_ppr = df_win_rate_pvt_ppr.set_index('gameNumber')
 df_win_rate_pvt_ppr.columns = df_win_rate_pvt_ppr.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
-df_win_rate_pvt_rank = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'rank_mean', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_rank = pd.pivot_table(my_df_A[my_df_A['gameNumber']< 30], values = 'rank_mean', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_rank = df_win_rate_pvt_rank.set_index('gameNumber')
 df_win_rate_pvt_rank.columns = df_win_rate_pvt_rank.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
 
-df_annot = df_win_rate_pvt_n_games.copy()
-for cur_date in list(df_annot):
-    df_annot[cur_date] = 'n_games: ' + df_annot[cur_date].astype(str) 
-    df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
-    df_annot[cur_date] =  df_annot[cur_date]  + 'pplayers per room (mean): '
-    df_annot[cur_date] = df_annot[cur_date] + df_win_rate_pvt_ppr[cur_date].astype(str)
-    df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
-    df_annot[cur_date] =  df_annot[cur_date]  + 'rank mean: '
-    df_annot[cur_date] = df_annot[cur_date] + df_win_rate_pvt_rank[cur_date].astype(str)
+df_annot_A = df_win_rate_pvt_n_games.copy()
+for cur_date in list(df_annot_A):
+    df_annot_A[cur_date] = 'n_games: ' + df_annot_A[cur_date].astype(str) 
+    df_annot_A[cur_date] =  df_annot_A[cur_date]  + '<br>'
+    df_annot_A[cur_date] =  df_annot_A[cur_date]  + 'players per room (mean): '
+    df_annot_A[cur_date] = df_annot_A[cur_date] + df_win_rate_pvt_ppr[cur_date].astype(str)
+    df_annot_A[cur_date] =  df_annot_A[cur_date]  + '<br>'
+    df_annot_A[cur_date] =  df_annot_A[cur_date]  + 'rank mean: '
+    df_annot_A[cur_date] = df_annot_A[cur_date] + df_win_rate_pvt_rank[cur_date].astype(str)
 
 #################################
 
-df_win_rate_pvt_n_games = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'n_games', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_n_games = pd.pivot_table(my_df_B[my_df_B['gameNumber']< 30], values = 'n_games', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_n_games = df_win_rate_pvt_n_games.set_index('gameNumber')
 df_win_rate_pvt_n_games.columns = df_win_rate_pvt_n_games.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
-df_win_rate_pvt_ppr = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'players_per_room_mean', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_ppr = pd.pivot_table(my_df_B[my_df_B['gameNumber']< 30], values = 'players_per_room_mean', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_ppr = df_win_rate_pvt_ppr.set_index('gameNumber')
 df_win_rate_pvt_ppr.columns = df_win_rate_pvt_ppr.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
-df_win_rate_pvt_rank = pd.pivot_table(my_df[my_df['gameNumber']< 30], values = 'rank_mean', index='gameNumber', columns = 'startDate_date').reset_index()
+df_win_rate_pvt_rank = pd.pivot_table(my_df_B[my_df_B['gameNumber']< 30], values = 'rank_mean', index='gameNumber', columns = 'startDate_date').reset_index()
 df_win_rate_pvt_rank = df_win_rate_pvt_rank.set_index('gameNumber')
 df_win_rate_pvt_rank.columns = df_win_rate_pvt_rank.columns.map(lambda t: t.strftime('%Y-%m-%d'))
 
 
-df_annot = df_win_rate_pvt_n_games.copy()
-for cur_date in list(df_annot):
-    df_annot[cur_date] = 'n_games: ' + df_annot[cur_date].astype(str) 
-    df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
-    df_annot[cur_date] =  df_annot[cur_date]  + 'pplayers per room (mean): '
-    df_annot[cur_date] = df_annot[cur_date] + df_win_rate_pvt_ppr[cur_date].astype(str)
-    df_annot[cur_date] =  df_annot[cur_date]  + '<br>'
-    df_annot[cur_date] =  df_annot[cur_date]  + 'rank mean: '
-    df_annot[cur_date] = df_annot[cur_date] + df_win_rate_pvt_rank[cur_date].astype(str)
+df_annot_B = df_win_rate_pvt_n_games.copy()
+for cur_date in list(df_annot_B):
+    df_annot_B[cur_date] = 'n_games: ' + df_annot_B[cur_date].astype(str) 
+    df_annot_B[cur_date] =  df_annot_B[cur_date]  + '<br>'
+    df_annot_B[cur_date] =  df_annot_B[cur_date]  + 'players per room (mean): '
+    df_annot_B[cur_date] = df_annot_B[cur_date] + df_win_rate_pvt_ppr[cur_date].astype(str)
+    df_annot_B[cur_date] =  df_annot_B[cur_date]  + '<br>'
+    df_annot_B[cur_date] =  df_annot_B[cur_date]  + 'rank mean: '
+    df_annot_B[cur_date] = df_annot_B[cur_date] + df_win_rate_pvt_rank[cur_date].astype(str)
+
 
 ####################################
-"""
+
 fig_3A = px.imshow(df_win_rate_pvt_A, 
                 x = df_win_rate_pvt_A.columns.tolist(),
                  labels=dict(x="date - game start", y="game number", color="win rate"),
                  title = 'win rate for group A - AB test T1',
                  zmin=0, zmax=1, origin= 'lower')
+fig_3A.update(data=[{'customdata': df_annot_A,
+    'hovertemplate': 'date - game start: %{x}<br>game number: %{y}<br>%{customdata}<br>win rate: %{z}<extra></extra>'}])
+
 
 fig_3B= px.imshow(df_win_rate_pvt_B, 
                 x = df_win_rate_pvt_B.columns.tolist(),
@@ -213,6 +220,8 @@ fig_3B= px.imshow(df_win_rate_pvt_B,
                  title = 'win rate for group B - AB test T1',
                  zmin=0, zmax=1, origin= 'lower')
 
+fig_3B.update(data=[{'customdata': df_annot_B,
+    'hovertemplate': 'date - game start: %{x}<br>game number: %{y}<br>%{customdata}<br>win rate: %{z}<extra></extra>'}])
 
 
 
