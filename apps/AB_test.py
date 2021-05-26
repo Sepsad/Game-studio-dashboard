@@ -1,26 +1,25 @@
 
-    import dash_core_components as dcc
-    import dash_html_components as html
-    import dash_bootstrap_components as dbc
+import dash_core_components as dcc
+import dash_html_components as html
+import dash_bootstrap_components as dbc
 
-    import plotly.graph_objects as go
-    from dash.dependencies import Input,Output
-    from datetime import date, datetime
+import plotly.graph_objects as go
+from dash.dependencies import Input,Output
+from datetime import date, datetime
 
-    import pandas as pd
-    from utils import read_AB_test_data
-    from app import app
-
-    AB_test_df = read_AB_test_data()
-    AB_test_df['lastGameDate'] = pd.to_datetime(AB_test_df['lastGameDate'])
-    AB_test_df['firstGameDate'] = pd.to_datetime(AB_test_df['firstGameDate'])
-    AB_test_df['meanKillNum'] = AB_test_df['sumKillNum'].astype(int) / AB_test_df['matchCount'].astype(int)
-    AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df['matchCount'].astype(int)
-
+import pandas as pd
+from utils import read_AB_test_data
+from app import app
+AB_test_df = read_AB_test_data()
+AB_test_df['lastGameDate'] = pd.to_datetime(AB_test_df['lastGameDate'])
+AB_test_df['firstGameDate'] = pd.to_datetime(AB_test_df['firstGameDate'])
+AB_test_df['meanKillNum'] = AB_test_df['sumKillNum'].astype(int) / AB_test_df['matchCount'].astype(int)
+AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df['matchCount'].astype(int)
 
 
 
-    layout = dbc.Container([
+
+layout = dbc.Container([
         dbc.Row([
             dbc.Col(html.H1("Nabardestan AB test"),className="text-center", width=12)
         ]),
@@ -59,7 +58,7 @@
 
 
 
-    @app.callback(
+@app.callback(
         [Output(component_id='fig-AB',component_property = 'figure'), 
         Output(component_id='fig-Total',component_property = 'figure')],
         [Input('date-picker-range', 'start_date'),
@@ -70,7 +69,7 @@
     )
 
 
-    def display_fig(start_first_game_date, end_first_game_date, minimum_games, target_col, churn_thershold = 7):
+def display_fig(start_first_game_date, end_first_game_date, minimum_games, target_col, churn_thershold = 7):
         if(minimum_games == None):
             minimum_games = 5
         else:
