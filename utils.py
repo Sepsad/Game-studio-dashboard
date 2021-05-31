@@ -46,7 +46,7 @@ daily_4hbins_df = pd.DataFrame(daily_4hbins_ls, columns = ['bin4h', 'bin4h_str']
 
 #print(chest_type_dict)
 
-
+"""depreciated
 def read_data(sheet_name = "rocket_reward"):
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
          'Qok-flurry-data-dcfd7cde3e9f.json', scope) 
@@ -63,17 +63,23 @@ def read_data(sheet_name = "rocket_reward"):
     final_df = pd.concat(dfs, axis=1)
     final_df.sort_index(inplace=True)
     return df, final_df
+"""
+
 
 def read_reward_data():
     #
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('rewards_daily')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('rewards_daily')
+    #data = worksheet.get_all_values()
+
+    q = 'SELECT * FROM irooni_rewards_daily'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
     df['chest_type'] = df['chest_type'].astype(int)
     df['daily_count'] = df['daily_count'].astype(int)
     df['reward_type'] = df['reward_type'].astype(str)
@@ -84,14 +90,16 @@ def read_reward_data():
 
 def read_consumption_data():
     #
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('consmumptions_daily')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('consmumptions_daily')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_consmumptions_daily'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     df['daily_count'] = df['daily_count'].astype(int)
     df['consumable'] = df['consumable'].astype(str)
     df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
@@ -102,14 +110,16 @@ def read_consumption_data():
 
 def read_engagement_data():
     #
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('engagement_daily')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('engagement_daily')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    q = 'SELECT * FROM irooni_engagement_daily'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
+    #df = pd.DataFrame(data, columns=headers)
     df['bin4h'] = df['bin4h'].astype(int)
     df['n_level_attempts'] = df['n_level_attempts'].astype(int)
     df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
@@ -120,14 +130,16 @@ def read_engagement_data():
 
 def read_engagement_data_1hbin():
     #
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('engagement_daily_1h')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('engagement_daily_1h')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_engagement_daily_1h'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     df['bin1h'] = df['bin1h'].astype(int)
     df['n_level_attempts'] = df['n_level_attempts'].astype(int)
     df['date'] = pd.to_datetime(df.date, format='%Y-%m-%d', utc= True)
@@ -213,14 +225,16 @@ def get_recent_hourly_user_agg_ratio():
 
 def read_hourly_users():
     #
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('users_daily_pattern')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('users_daily_pattern')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_users_daily_pattern'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     df['bin1h'] = df['bin1h'].astype(int)
     df['n_distinct_players_l1_l19'] = df['n_distinct_players_l1_l19'].astype(int)
     df['n_distinct_players_l20_99'] = df['n_distinct_players_l20_99'].astype(int)
@@ -277,14 +291,16 @@ def get_consumptions_coin_equivalent(consumption_df):
     return(consumption_df)
 
 def get_daily_unique_users():
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('users_daily_pattern')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('users_daily_pattern')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_users_daily_pattern'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     df['n_distinct_players_l1_l19'] = df['n_distinct_players_l1_l19'].astype(int)
     df['n_distinct_players_l20_99'] = df['n_distinct_players_l20_99'].astype(int)
     df['n_distinct_players_l100_l299'] = df['n_distinct_players_l100_l299'].astype(int)
@@ -300,7 +316,7 @@ def get_daily_unique_users():
     df = df.groupby(['date'])['user_count'].sum().reset_index()
     return(df)
 
-
+#depreciated
 def get_au():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
          'phrasal-datum-311915-03b34c76b093.json', scope) 
@@ -319,14 +335,16 @@ def get_au_db():
     return({df.username.values[0]: df.password.values[0]})
 
 def read_weekly_engagement_percentile_data():
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('weekly_engagement_percentiles')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('weekly_engagement_percentiles')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_weekly_engagement_percentiles'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     col_names = list(df)
     for col in col_names:
         if col in ['year', 'weekly']:
@@ -338,14 +356,16 @@ def read_weekly_engagement_percentile_data():
 
 
 def read_weekly_engagement_percentile_data():
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-         'phrasal-datum-311915-03b34c76b093.json', scope) 
-    gc = gspread.authorize(credentials)
-    sheet = gc.open("irooni_lettuce")
-    worksheet = sheet.worksheet('weekly_engagement_percentiles')
-    data = worksheet.get_all_values()   
-    headers = data.pop(0)
-    df = pd.DataFrame(data, columns=headers)
+    #credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    #     'phrasal-datum-311915-03b34c76b093.json', scope) 
+    #gc = gspread.authorize(credentials)
+    #sheet = gc.open("irooni_lettuce")
+    #worksheet = sheet.worksheet('weekly_engagement_percentiles')
+    #data = worksheet.get_all_values()   
+    #headers = data.pop(0)
+    #df = pd.DataFrame(data, columns=headers)
+    q = 'SELECT * FROM irooni_weekly_engagement_percentiles'
+    df = pd.read_sql(q, database_connection, index_col = 'index')
     col_names = list(df)
     for col in col_names:
         if col in ['year', 'weekly']:
@@ -354,6 +374,7 @@ def read_weekly_engagement_percentile_data():
             df[col] = df[col].astype(float)
     return df
 
+#depreciated
 def read_nabardestan_winrate_data():
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
          'phrasal-datum-311915-03b34c76b093.json', scope) 
