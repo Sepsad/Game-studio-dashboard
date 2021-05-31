@@ -1,3 +1,4 @@
+from os import path
 import dash
 import dash_core_components as dcc
 import dash_auth
@@ -13,7 +14,7 @@ import pandas as pd
 from app import app
 from app import server
 
-from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test, room_occupancy#, this_week, reward
+from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test, room_occupancy, DAU#, this_week, reward
 from utils import get_au_db
 
 server = app.server # I add this part here, Abbas
@@ -44,6 +45,8 @@ app.layout = html.Div([html.H1(children='Game insights Dashboard'), html.H2('Iro
         dcc.Link('Nabardestan AB test win rate', href = '/apps/AB_test'),
         html.Br(),
         dcc.Link('Nabardestan room occupancy: players vs bots', href = '/apps/room_occupancy'),
+        html.Br(),
+        dcc.Link('Daily Active User Percent', href = '/apps/DAU'),
         html.Br()
     ], className="row"),
     html.Div(id='page-content', children=[])
@@ -66,13 +69,16 @@ def display_page(pathname):
         return AB_test.layout
     if pathname == '/apps/room_occupancy':
         return room_occupancy.layout
+    if pathname == '/apps/DAU':
+        return DAU.layout
     else:
         return html.H6("Please choose a link")
 
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=8080)
+    # app.run_server(debug=True, host='0.0.0.0', port=8080)
+    app.run_server(debug=True)
 
 
 

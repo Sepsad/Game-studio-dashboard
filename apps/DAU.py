@@ -9,7 +9,7 @@ from utils import read_dau_percent_data
 
 df_dau_percent = read_dau_percent_data()
 def display_fig():
-    fig_2b = px.line(df_dau_percent, x='Start Date', y= 'size', color = 'last_seen', title= '')
+    fig_2b = px.line(df_dau_percent, x='startDate', y= 'size', color = 'last_seen', title= '')
     return fig_2b
 
 
