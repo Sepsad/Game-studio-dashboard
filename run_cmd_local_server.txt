@@ -1,1 +1,1 @@
-modir@tehrooni-data:~/dashboards_GameStudio/Game-studio-dashboard$ gunicorn --bind 0.0.0.0:8080 index:server 
+nohup gunicorn --bind 0.0.0.0:8080 index:server&
