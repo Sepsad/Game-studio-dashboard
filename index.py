@@ -16,6 +16,8 @@ from app import server
 from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test, room_occupancy#, this_week, reward
 from utils import get_au_db
 
+server = app.server # I add this part here, Abbas
+
 
 au = get_au_db()
 auth = dash_auth.BasicAuth(
@@ -70,7 +72,7 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0', port=8080)
 
 
 
