@@ -424,3 +424,7 @@ def read_dau_percent_data():
     q = 'select * from dau_percent_df'
     df = pd.read_sql(q, database_connection)
     return df
+def read_dau_data():
+    q = 'select * from dau_df'
+    df = pd.read_sql(q, database_connection)
+    return df
