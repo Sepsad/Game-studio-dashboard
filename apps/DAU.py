@@ -11,8 +11,8 @@ df_dau_percent = read_dau_percent_data()
 df_dau = read_dau_data()
 
 def display_fig():
-    fig_2b = px.line(df_dau_percent, x='startDate', y= 'size', color = 'last_seen', title= 'DAU percent per day')
-    fig_2c = px.line(df_dau, x='startDate', y= 'size', color = 'last_seen', title= 'DAU size per day')
+    fig_2b = px.line(df_dau_percent, x='startDate', y= 'size', color = 'first_seen', title= 'DAU percent per day')
+    fig_2c = px.line(df_dau, x='startDate', y= 'size', color = 'frist_seen', title= 'DAU size per day')
 
     return fig_2b, fig_2c
 
