@@ -428,3 +428,13 @@ def read_dau_data():
     q = 'select * from dau_df'
     df = pd.read_sql(q, database_connection)
     return df
+
+def read_skin_stats_data():
+    q = 'select * from skin_df_agg'
+    df = pd.read_sql(q, database_connection)
+    return df
+
+def read_skin_stats2_data():
+    q = 'select * from skin_df_agg_detail'
+    df = pd.read_sql(q, database_connection)
+    return df
