@@ -48,9 +48,12 @@ layout = dbc.Container([
                 width={"size": 5}),
             dbc.Col([
 
+                dcc.Graph(id = "fig-Churn", figure = {})],
+                width={"size": 5}),
+            dbc.Col([
+
                 dcc.Graph(id = "fig-Total", figure = {})],
                 width={"size": 5})
-                
             ])
             
                 
@@ -59,7 +62,8 @@ layout = dbc.Container([
 
 
 @app.callback(
-        [Output(component_id='fig-AB',component_property = 'figure'), 
+        [Output(component_id='fig-AB',component_property = 'figure'),
+        Output(component_id='fig-Churn',component_property = 'figure'), 
         Output(component_id='fig-Total',component_property = 'figure')],
         [Input('date-picker-range', 'start_date'),
         Input('date-picker-range','end_date'),
@@ -80,18 +84,19 @@ def display_fig(start_first_game_date, end_first_game_date, minimum_games, targe
         mask = (df_for_plot['firstGameDate'] > start_first_game_date) & (df_for_plot['firstGameDate'] <= end_first_game_date)
         df_for_plot = df_for_plot.loc[mask]
 
+
         fig_AB = go.Figure()
         fig_AB.add_trace(go.Box(
         y= df_for_plot[df_for_plot['is_churned'] == True][target_col],
         x= df_for_plot['groupName'],
-        name='Churned',
+        name='Churned', notched=True,
         marker_color='red',boxpoints = 'all'
         ))
 
         fig_AB.add_trace(go.Box(
         y= df_for_plot[df_for_plot['is_churned'] == False][target_col],
         x= df_for_plot['groupName'],
-        name='Not Churned',
+        name='Not Churned', notched=True,
         marker_color='green',boxpoints = 'all'
         ))
 
@@ -101,6 +106,31 @@ def display_fig(start_first_game_date, end_first_game_date, minimum_games, targe
         xaxis_title= 'Groups',
         boxmode='group'
         )
+
+        fig_churn = go.Figure()
+        fig_churn.add_trace(go.Box(
+
+        y= df_for_plot[df_for_plot['groupName'] == "A"][target_col],
+        x= df_for_plot['is_churned'],
+        name='A group',
+        marker_color='blue',boxpoints = 'all', notched=True,
+        ))
+
+        fig_churn.add_trace(go.Box(
+        y= df_for_plot[df_for_plot['groupName'] == "B"][target_col],
+        x= df_for_plot['is_churned'],
+        name='B group',
+        marker_color='#ff7f0e',boxpoints = 'all', notched=True,
+        ))
+
+
+        fig_churn.update_layout(
+
+        title = "Churned = True & Not Churned = False ",    
+        boxmode='group'
+        )
+
+
 
         
         fig_Total = go.Figure()
@@ -125,4 +155,4 @@ def display_fig(start_first_game_date, end_first_game_date, minimum_games, targe
 
 
 
-        return fig_AB, fig_Total
+        return fig_AB, fig_churn, fig_Total
