@@ -14,7 +14,7 @@ import pandas as pd
 from app import app
 from app import server
 
-from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test, room_occupancy, DAU#, this_week, reward
+from apps import detailed_engagemnet, total, nab_winrate_heatmap, AB_test, room_occupancy, DAU, skin_stats#, this_week, reward
 from utils import get_au_db
 
 server = app.server # I add this part here, Abbas
@@ -47,7 +47,8 @@ app.layout = html.Div([html.H1(children='Game insights Dashboard'), html.H2('Iro
         dcc.Link('Nabardestan room occupancy: players vs bots', href = '/apps/room_occupancy'),
         html.Br(),
         dcc.Link('Daily Active User Percent', href = '/apps/DAU'),
-        html.Br()
+        html.Br(),
+        dcc.Link('Looks & cosmetics usage frequency', href = '/apps/looks_cosmetics')
     ], className="row"),
     html.Div(id='page-content', children=[])
 ])
@@ -71,6 +72,8 @@ def display_page(pathname):
         return room_occupancy.layout
     if pathname == '/apps/DAU':
         return DAU.layout
+    if pathname == '/apps/looks_cosmetics':
+        return skin_stats.layout
     else:
         return html.H6("Please choose a link")
 
