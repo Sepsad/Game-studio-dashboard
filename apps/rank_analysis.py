@@ -22,7 +22,7 @@ AB_test_df['is_churned'] = ((datetime.now() - AB_test_df.lastGameDate ).dt.days 
 
 layout = dbc.Container([
         dbc.Row([
-            dbc.Col(html.H1("Nabardestan AB test"),className="text-center", width=12)
+            dbc.Col(html.H1("Rank ~ Churn"),className="text-center", width=12)
         ]),
         
         dbc.Row([

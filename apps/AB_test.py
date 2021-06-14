@@ -33,8 +33,8 @@ layout = dbc.Container([
                 initial_visible_month=date(2021, 3, 20)),
                 dcc.Input(id = 'min-games',
                 placeholder='Enter minimum games has played...',
-                type='number',
-                value=1
+                    type='number',
+                    value=1
                 ),
                 dcc.Input(id = 'churn-threshold',
                 placeholder='Enter Churn-threshold',
@@ -42,7 +42,9 @@ layout = dbc.Container([
                 value=1
                 ),
                 dcc.Dropdown(id= "target-col", multi = False, value = 'winRate',
-                options = [{'label': x, 'value' : x} for x in ['matchCount', 'winRate', 'sumKillNum', 'sumDeathNum', 'medianRank', 'meanScore', 'meanKillNum', 'meanDeathNum']]),
+                options = [{'label': x, 'value' : x} for x in ['matchCount', 'winRate', 'sumKillNum', 'sumDeathNum',\
+                                                                'medianRank', 'meanScore', 'meanKillNum', 'meanDeathNum',\
+                                                                'killDeathRatio']]),
 
                 dcc.Graph(id = "fig-AB", figure = {})],
                 width={"size": 5}),
