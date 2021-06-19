@@ -1,4 +1,5 @@
 
+from apps.rank_analysis import AB_test_df
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
@@ -10,11 +11,23 @@ from datetime import date, datetime
 import pandas as pd
 from utils import read_AB_test_data
 from app import app
-AB_test_df = read_AB_test_data()
-AB_test_df['lastGameDate'] = pd.to_datetime(AB_test_df['lastGameDate'])
-AB_test_df['firstGameDate'] = pd.to_datetime(AB_test_df['firstGameDate'])
-AB_test_df['meanKillNum'] = AB_test_df['sumKillNum'].astype(int) / AB_test_df['matchCount'].astype(int)
-AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df['matchCount'].astype(int)
+
+
+AB_test_T1 = read_AB_test_data('T1')
+AB_test_T2 = read_AB_test_data('T2')
+
+def get_ab_test_data(test_name):
+    if(test_name == 'T1'):
+        AB_test_df = AB_test_T1
+    if(test_name == 'T2'):
+        AB_test_df = AB_test_T2
+
+    AB_test_df['lastGameDate'] = pd.to_datetime(AB_test_df['lastGameDate'])
+    AB_test_df['firstGameDate'] = pd.to_datetime(AB_test_df['firstGameDate'])
+    AB_test_df['meanKillNum'] = AB_test_df['sumKillNum'].astype(int) / AB_test_df['matchCount'].astype(int)
+    AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df['matchCount'].astype(int)
+
+    return AB_test_df
 
 
 
@@ -22,6 +35,12 @@ AB_test_df['meanDeathNum'] = AB_test_df['sumDeathNum'].astype(int) / AB_test_df[
 layout = dbc.Container([
         dbc.Row([
             dbc.Col(html.H1("Nabardestan AB test"),className="text-center", width=12)
+        ]),
+
+        dbc.Row([
+            dbc.Col([                
+                dcc.Dropdown(id= "test-name", multi = False, value = 'T1',
+                options = [{'label': x, 'value' : x} for x in ['T1', 'T2']])])
         ]),
         
         dbc.Row([
@@ -33,13 +52,11 @@ layout = dbc.Container([
                 initial_visible_month=date(2021, 3, 20)),
                 dcc.Input(id = 'min-games',
                 placeholder='Enter minimum games has played...',
-                    type='number',
-                    value=1
+                    type='number'
                 ),
                 dcc.Input(id = 'churn-threshold',
                 placeholder='Enter Churn-threshold',
-                type='number',
-                value=1
+                type='number'
                 ),
                 dcc.Dropdown(id= "target-col", multi = False, value = 'winRate',
                 options = [{'label': x, 'value' : x} for x in ['matchCount', 'winRate', 'sumKillNum', 'sumDeathNum',\
@@ -67,7 +84,8 @@ layout = dbc.Container([
         [Output(component_id='fig-AB',component_property = 'figure'),
         Output(component_id='fig-Churn',component_property = 'figure'), 
         Output(component_id='fig-Total',component_property = 'figure')],
-        [Input('date-picker-range', 'start_date'),
+        [Input('test-name', 'value'),
+        Input('date-picker-range', 'start_date'),
         Input('date-picker-range','end_date'),
         Input('min-games','value'),
         Input('target-col','value'),
@@ -75,11 +93,13 @@ layout = dbc.Container([
     )
 
 
-def display_fig(start_first_game_date, end_first_game_date, minimum_games, target_col, churn_thershold = 7):
+def display_fig(test_name,start_first_game_date, end_first_game_date, minimum_games, target_col, churn_thershold = 7):
         if(minimum_games == None):
             minimum_games = 5
         else:
             minimum_games = int(minimum_games)
+
+        AB_test_df = get_ab_test_data(test_name)
 
         AB_test_df['is_churned'] = ((datetime.now() - AB_test_df.lastGameDate ).dt.days > churn_thershold)
         df_for_plot = AB_test_df[AB_test_df.matchCount.astype(int) > minimum_games]
