@@ -10,7 +10,7 @@ import pandas as pd
 from utils import read_AB_test_data
 from app import app
 
-AB_test_df = read_AB_test_data()
+AB_test_df = read_AB_test_data('T1')
 
 AB_test_df['lastGameDate'] = pd.to_datetime(AB_test_df['lastGameDate'])
 AB_test_df['firstGameDate'] = pd.to_datetime(AB_test_df['firstGameDate'])
@@ -41,6 +41,10 @@ layout = dbc.Container([
                     1: '1'
                     }
                 ),
+                dcc.Input(id = 'min-games',
+                placeholder='Enter minimum games',
+                    type='number'
+                ),
                 dcc.Graph(id = "fig-rank", figure = {})],
                 width={"size": 5}),
         ])       
@@ -48,12 +52,13 @@ layout = dbc.Container([
 
 @app.callback(
         Output(component_id='fig-rank',component_property = 'figure'),
-        Input('winrate-range', 'value')
+        [Input('winrate-range', 'value'),
+        Input('min-games','value')]
     )
 
-def display_fig(winrate_range):
+def display_fig(winrate_range, min_games):
     df_for_rank = AB_test_df.loc[ (winrate_range[0] < AB_test_df['winRate']) & (AB_test_df['winRate'] < winrate_range[1]) ]
-
+    df_for_rank = df_for_rank.loc[df_for_rank.matchCount > min_games]
     df_rank_plot = pd.merge(df_for_rank.groupby('medianRank').count().reset_index().iloc[:,0:2] , 
                             pd.DataFrame(df_for_rank.groupby('medianRank').mean()['is_churned']).reset_index())
     df_rank_plot.columns = ['medianRank', 'size', 'is_churned']

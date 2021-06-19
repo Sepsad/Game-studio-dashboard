@@ -828,9 +828,18 @@ def read_nabardestan_winrate_AB_t1_data_db():
     df = pd.read_sql(q, database_connection, index_col = 'index')
     return df
 
-def read_AB_test_data():
-    q = 'SELECT * FROM AB_Test_t1'
-    df = pd.read_sql(q, database_connection, index_col = 'index')
+def read_AB_test_data(test_name):
+
+    if(test_name == 'T1'):
+        q = 'SELECT * FROM AB_Test_t1'
+        df = pd.read_sql(q, database_connection, index_col = 'index')
+    elif(test_name == 'T2'):
+        q = 'SELECT * FROM AB_Test_t2'
+        df = pd.read_sql(q, database_connection, index_col = 'index')
+    else:
+        print("this test does not exist.")
+        return pd.DataFrame()
+    
     return df
     
 

@@ -27,7 +27,7 @@ oauthlib==3.1.0
 pandas==1.2.4
 plotly==4.8.0
 pyasn1==0.4.8
-pyasn1-modules==0.2.8
+pyasn1-modules
 pyparsing==2.4.7
 python-dateutil==2.8.1
 pytz==2021.1
@@ -40,4 +40,4 @@ urllib3==1.26.4
 Werkzeug==1.0.1
 dash-auth==1.4.1
 SQLAlchemy==1.4.15
-mysql-connector-python==8.0.25
+mysql-connector-python
